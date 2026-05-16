@@ -1,0 +1,104 @@
+/* === Paper Stage: CSS 3D 折纸 === */
+/* Mobile-first sizing */
+.paper-stage {
+  perspective: 800px;
+  perspective-origin: center center;
+}
+
+/* === Paper Sheet === */
+.paper {
+  /* Default size — large */
+  width: min(94vw, 400px);
+  height: calc(min(94vw, 400px) * 1.4);
+  max-height: 76vh;
+  background: url('../assets/img/paper-texture.png') center/cover no-repeat;
+  background-color: transparent;
+  position: relative;
+  transform-style: preserve-3d;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+  transition: width 0.4s ease, height 0.4s ease, max-height 0.4s ease;
+}
+
+/* Expanded paper during typewriter — fills most of screen */
+.paper-stage.typewriting .paper {
+  width: min(98vw, 440px);
+  height: calc(min(98vw, 440px) * 1.4);
+  max-height: 84vh;
+}
+
+/* === Paper Content (text blocks) === */
+.paper-content {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 2;
+  padding: 0;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.text-shard {
+  position: absolute;
+  color: #1a1a2e;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 500;
+  white-space: pre-wrap;
+  max-width: 85%;
+}
+
+/* === Fold Triangles === */
+.fold {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.fold::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: transparent;
+}
+
+.fold-tl {
+  clip-path: polygon(0 0, 50% 0, 0 50%);
+  transform-origin: 0 0;
+}
+.fold-tr {
+  clip-path: polygon(50% 0, 100% 0, 100% 50%);
+  transform-origin: 100% 0;
+}
+.fold-bl {
+  clip-path: polygon(0 50%, 0 100%, 50% 100%);
+  transform-origin: 0 100%;
+}
+.fold-br {
+  clip-path: polygon(50% 100%, 100% 100%, 100% 50%);
+  transform-origin: 100% 100%;
+}
+
+/* === Folded state === */
+.paper.folded {
+  animation: paper-breathe 2.5s ease-in-out infinite;
+}
+
+@keyframes paper-breathe {
+  0%, 100% { transform: scale(0.88) rotate(-4deg); }
+  50% { transform: scale(0.89) rotate(-3.5deg); }
+}
+
+/* === Pre-fold shiver === */
+.paper.pre-fold {
+  animation: paper-shiver 0.08s ease-in-out infinite;
+}
+
+@keyframes paper-shiver {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(0.4deg) scale(1.005); }
+  75% { transform: rotate(-0.4deg) scale(0.995); }
+}

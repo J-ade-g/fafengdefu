@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>发疯得福</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/paper.css">
+</head>
+<body>
+
+  <!-- 首页 -->
+  <div id="home-page" class="home-page">
+    <img src="assets/img/title.png" alt="标题" class="home-title-img">
+    <img src="assets/img/home-main.png" alt="首页" class="home-main-img">
+    <div class="home-buttons">
+      <button id="btn-home-mouthpiece" class="home-btn">
+        <img src="assets/img/mouth.png" alt="嘴替">
+        <span>嘴替</span>
+      </button>
+      <button id="btn-home-venting" class="home-btn">
+        <img src="assets/img/venting-btn.png" alt="暴走">
+        <span>暴走</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Canvas 层：破坏动效 + 粒子 + 暴走模式 -->
+  <canvas id="destruction-canvas"></canvas>
+  <canvas id="venting-canvas"></canvas>
+
+  <!-- 暴走模式提示 -->
+  <div id="venting-hint" class="venting-hint hidden">
+    <span id="venting-hint-text"></span>
+    <div id="venting-progress" class="venting-progress hidden">
+      <div id="venting-progress-fill" class="venting-progress-fill"></div>
+    </div>
+  </div>
+
+  <!-- 纸表演层：CSS 3D 折纸 -->
+  <div id="paper-stage" class="paper-stage">
+    <div id="paper" class="paper">
+      <div id="paper-content" class="paper-content"></div>
+      <div class="fold fold-tl"></div>
+      <div class="fold fold-tr"></div>
+      <div class="fold fold-bl"></div>
+      <div class="fold fold-br"></div>
+    </div>
+  </div>
+
+  <!-- 角色踱步动画（loading态） -->
+  <div id="character-walk" class="character-walk hidden">
+    <div class="walk-sprite" id="walk-sprite"></div>
+  </div>
+
+  <!-- 工具选择栏 -->
+  <div id="toolbar" class="toolbar hidden">
+    <button class="tool-btn" data-tool="fire">
+      <img src="assets/img/fire-icon.png" alt="火" class="tool-icon-img">
+      <span class="tool-label">一把火烧了</span>
+    </button>
+    <button class="tool-btn tool-btn-shred" data-tool="shred">
+      <img src="assets/img/shredder.png" alt="碎纸机" class="tool-icon-img">
+      <span class="tool-label">碎纸机碎了它</span>
+    </button>
+    <button class="tool-btn" data-tool="press">
+      <img src="assets/img/press-icon.png" alt="液压机" class="tool-icon-img">
+      <span class="tool-label">液压机压死它</span>
+    </button>
+  </div>
+
+  <!-- 破坏提示 -->
+  <div id="destruction-hint" class="destruction-hint hidden">
+    <span id="hint-text"></span>
+  </div>
+
+  <!-- 碎纸机入口 -->
+  <div id="shredder-slot" class="shredder-slot hidden">
+    <img src="assets/img/shredder.png" alt="shredder" class="shredder-img">
+  </div>
+
+  <!-- 液压机压板 -->
+  <div id="press-plate" class="press-plate hidden"></div>
+
+  <!-- 输入区 -->
+  <div id="input-area" class="input-area hidden">
+    <textarea id="complaint-input" placeholder="今天怎么了？" maxlength="100"></textarea>
+    <div class="bubble-row" id="bubble-row">
+      <span class="bubble" data-text="这个世界太吵了">这个世界太吵了</span>
+      <span class="bubble" data-text="我的电量只剩1%">我的电量只剩1%</span>
+      <span class="bubble" data-text="不想当人类了">不想当人类了</span>
+      <span class="bubble" data-text="老板画的饼够我吃三辈子了">老板画的饼够我吃三辈子了</span>
+      <span class="bubble" data-text="领导一张嘴我脑浆就开始沸腾">领导一张嘴我脑浆就开始沸腾</span>
+      <span class="bubble" data-text="老师布置的作业比我命还长">老师布置的作业比我命还长</span>
+      <span class="bubble" data-text="又被生活一记闷棍">又被生活一记闷棍</span>
+      <span class="bubble" data-text="老板的脑子是不是忘在娘胎里了">老板的脑子是不是忘在娘胎里了</span>
+    </div>
+    <div class="mouth-btn-wrap">
+      <button id="btn-mouth" class="mouth-btn">
+        <img src="assets/img/mouth.png" alt="交给嘴替">
+      </button>
+      <span class="mouth-btn-label">点击嘴唇</span>
+    </div>
+  </div>
+
+  <!-- 暴走模式选择 -->
+  <div id="mode-select" class="mode-select hidden">
+    <div class="mode-select-label">选一种发疯方式</div>
+    <div class="mode-cards">
+      <div class="mode-card" data-mode="spin">
+        <div class="mode-card-icon"><img src="assets/img/fling-person.png" alt="旋转跳跃"></div>
+        <div class="mode-card-name">旋转跳跃</div>
+      </div>
+      <div class="mode-card" data-mode="hammer">
+        <div class="mode-card-icon"><img src="assets/img/hammer.png" alt="暴锤地球"></div>
+        <div class="mode-card-name">暴锤地球</div>
+      </div>
+      <div class="mode-card" data-mode="zombie">
+        <div class="mode-card-icon"><img src="assets/img/zombie.png" alt="僵尸统治世界"></div>
+        <div class="mode-card-name">统治世界</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 角色选择标签（顶部） -->
+  <div id="select-label" class="select-label-top hidden">选择窝囊负鼠或发疯吗喽替你发声</div>
+
+  <!-- 角色选择 -->
+  <div id="character-select" class="character-select hidden">
+    <div class="character-cards">
+      <div class="character-card" data-character="opossum">
+        <div class="card-avatar"><img src="assets/img/character-avatars/opossum.png" alt="负鼠"></div>
+        <div class="card-name">窝囊负鼠</div>
+        <div class="card-desc">精神脆弱</div>
+      </div>
+      <div class="character-card" data-character="macaque">
+        <div class="card-avatar"><img src="assets/img/character-avatars/macaque.png" alt="吗喽"></div>
+        <div class="card-name">发疯吗喽</div>
+        <div class="card-desc">谁惹骂谁</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 盲盒揭晓 -->
+  <div id="blindbox-reveal" class="blindbox-reveal hidden">
+    <div class="blindbox-card" id="blindbox-card">
+      <div class="blindbox-inner">
+        <div class="blindbox-type" id="blindbox-type"></div>
+        <div class="blindbox-content" id="blindbox-content"></div>
+        <div class="blindbox-subtitle" id="blindbox-subtitle"></div>
+      </div>
+    </div>
+    <div class="blindbox-actions">
+      <button id="btn-share-blindbox" class="btn-secondary">告诉ta这有多离谱</button>
+      <button id="btn-retry" class="btn-primary">再来一次</button>
+    </div>
+  </div>
+
+  <!-- 结果 CTA（预设结束后 / 用户折纸后） -->
+  <div id="result-cta" class="result-cta hidden">
+    <div class="cta-text" id="cta-text">你的纸呢？要不要也来一个？</div>
+    <div class="cta-buttons" id="cta-buttons">
+      <button id="btn-save-paper" class="btn-secondary">保存纸</button>
+      <button id="btn-share-result" class="btn-secondary">告诉ta这有多离谱</button>
+      <button id="btn-start-input" class="btn-primary">亲手捏一个</button>
+      <button id="btn-continue-destroy" class="btn-primary hidden">继续破坏</button>
+    </div>
+  </div>
+
+  <!-- Loading 遮罩 -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <img id="loading-character" src="assets/img/character-avatars/opossum.png" alt="loading" style="width:140px;height:140px;object-fit:contain;">
+    <div class="loading-text">嘴替正在疯狂输出...</div>
+  </div>
+
+  <!-- 分享预览弹窗 -->
+  <div id="share-modal" class="share-modal hidden">
+    <div class="share-modal-content">
+      <img id="share-image" src="" alt="分享图片">
+      <p class="share-tip">长按图片保存</p>
+      <button id="btn-close-share" class="btn-primary">关闭</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script src="js/presets.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/tts.js"></script>
+  <script src="js/llm.js"></script>
+  <script src="js/prompts.js"></script>
+  <script src="js/gsap-timelines.js"></script>
+  <script src="js/canvas-destruction.js"></script>
+  <script src="js/blindbox.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/venting.js"></script>
+  <script src="js/main.js"></script>
+
+
+</body>
+</html>
