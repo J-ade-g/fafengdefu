@@ -2,6 +2,8 @@
 
 **情绪释放 Web App** — 把你的情绪揉成纸团，扔出去。
 
+[在线体验](https://fafengdefu.vercel.app)
+
 CSS 3D 折纸动画 + Canvas 破坏动效 + 粒子系统。中国传统文化中「碎碎平安」的数字化表达。
 
 ---
